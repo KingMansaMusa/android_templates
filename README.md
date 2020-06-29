@@ -10,6 +10,7 @@ Just pick any template that fits your needs and use.
 ## Available Templates
 
 - Bottom Navigation [Basic]
+- Bottom Navigation [Using Room]
 
 ## Contributing
 
