@@ -7,8 +7,8 @@ import java.util.*
 
 @Dao
 interface ExampleDao {
-    @Query("SELECT * FROM item ORDER BY name DESC")
-    fun getItemsOrderByName(): LiveData<List<Item>>
+    @Query("SELECT * FROM item ORDER BY datetime(start_at) ASC")
+    fun getItemsOrderByDate(): LiveData<List<Item>>
 
     @Query("SELECT * FROM item WHERE id = :id LIMIT 1")
     fun findOne(id: UUID): LiveData<Item>

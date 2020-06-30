@@ -24,7 +24,7 @@ class OneFragment : Fragment() {
     ): View? {
         _binding = FragmentOneBinding.inflate(inflater, container, false)
         val exampleAdapter = ExampleAdapter(activity?.applicationContext!!)
-        val recyclerView = binding.fragmentOneItemList.apply {
+        binding.fragmentOneItemList.apply {
             adapter = exampleAdapter
         }
         oneViewModel.items.observe(viewLifecycleOwner, Observer { items ->

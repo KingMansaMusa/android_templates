@@ -71,11 +71,14 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation "androidx.fragment:fragment-ktx:$versions.fragment"
     implementation "com.google.dagger:hilt-android:$versions.hilt"
+    implementation 'com.google.code.gson:gson:2.8.6'
     implementation "androidx.hilt:hilt-lifecycle-viewmodel:$versions.hilt_ext"
     implementation "androidx.hilt:hilt-work:$versions.hilt_ext"
     implementation "androidx.room:room-runtime:$versions.room"
     implementation "androidx.room:room-ktx:$versions.room"
     implementation "androidx.work:work-runtime-ktx:$versions.work"
+    implementation 'org.threeten:threetenbp:1.4.4'
+
 
     api "org.jetbrains.kotlinx:kotlinx-coroutines-core:$versions.coroutines"
     api "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.coroutines"

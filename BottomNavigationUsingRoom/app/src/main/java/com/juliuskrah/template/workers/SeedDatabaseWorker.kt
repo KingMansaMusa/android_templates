@@ -6,10 +6,16 @@ import androidx.hilt.Assisted
 import androidx.hilt.work.WorkerInject
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.google.gson.stream.JsonReader
 import com.juliuskrah.template.data.dao.ExampleDao
 import com.juliuskrah.template.data.domain.Item
+import com.juliuskrah.template.data.domain.TodoItem
 import kotlinx.coroutines.coroutineScope
-import java.util.*
+import org.threeten.bp.Instant
+import org.threeten.bp.OffsetDateTime
+import org.threeten.bp.ZoneOffset
 
 /**
  * Enable injection @{link @WorkerInject} with the following dependency androidx.hilt:hilt-work
@@ -23,20 +29,31 @@ class SeedDatabaseWorker  @WorkerInject constructor(
 ) : CoroutineWorker(context, workerParams) {
     override suspend fun doWork(): Result = coroutineScope {
         try {
-            val items = listOf(
-                Item(UUID.fromString("3c906c85-ca49-4356-9a3d-6d99c2c45b18"), "Abeiku"),
-                Item(UUID.fromString("7386207e-f7f0-4b2c-a9b2-3e3993a2bda9"), "Freda")
-            )
-            Log.d(TAG, "Saving ${items.joinToString()}")
-            exampleDao.insertAll(items)
-            Result.success()
+            applicationContext.assets.open(TODO_FILENAME).use {inputStream ->
+                JsonReader(inputStream.reader()).use {jsonReader ->
+                    val itemType = object : TypeToken<List<TodoItem>>() {}.type
+                    val itemList: List<TodoItem> = Gson().fromJson(jsonReader, itemType)
+                    val items = itemList.map(::mapToDomain)
+                    Log.d(TAG, "Saving ${items.joinToString()}")
+                    exampleDao.insertAll(items)
+                    Result.success()
+                }
+            }
         } catch (ex: Exception) {
             Log.e(TAG, "Error seeding database", ex)
             Result.failure()
         }
     }
 
+    private fun mapToDomain(todo: TodoItem): Item {
+        return Item(todo.id, todo.name, todo.description, fromMillis(todo.startAt))
+    }
+
     companion object {
         private const val TAG = "SeedDatabaseWorker"
+        const val TODO_FILENAME = "items.json"
+        fun fromMillis(epochMillis: Long): OffsetDateTime {
+            return OffsetDateTime.ofInstant(Instant.ofEpochMilli(epochMillis), ZoneOffset.UTC)
+        }
     }
 }

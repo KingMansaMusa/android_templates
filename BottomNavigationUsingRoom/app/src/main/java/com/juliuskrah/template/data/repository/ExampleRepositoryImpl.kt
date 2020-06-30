@@ -5,11 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.juliuskrah.template.data.dao.ExampleDao
 import com.juliuskrah.template.data.domain.Item
-import com.juliuskrah.template.data.domain.ItemModel
+import com.juliuskrah.template.data.domain.TodoItem
 import javax.inject.Inject
 
 class ExampleRepositoryImpl @Inject constructor(
-    private val exampleDao: ExampleDao
+    exampleDao: ExampleDao
 ): ExampleRepository {
     override fun two(): LiveData<String> {
         return MutableLiveData<String>().apply {
@@ -23,17 +23,15 @@ class ExampleRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun items(): LiveData<List<ItemModel>> {
+    override fun items(): LiveData<List<TodoItem>> {
         return Transformations.map(this.items, ::entityToModel)
     }
 
-    private fun entityToModel(items: List<Item>): List<ItemModel> {
-        val itemModels = mutableListOf<ItemModel>()
-        for(item in items) {
-            itemModels.add(ItemModel(item.id, item.name))
+    private fun entityToModel(items: List<Item>): List<TodoItem> {
+        return items.map {
+            TodoItem(it.id, it.name, it.description, it.startAt.toInstant().toEpochMilli())
         }
-        return itemModels
     }
 
-    private val items = exampleDao.getItemsOrderByName()
+    private val items = exampleDao.getItemsOrderByDate()
 }
